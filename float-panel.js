@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Bangumi User Hover Panel
-// @namespace    https://github.com/shadowdreamer/jioben/tree/master/bangumi/
-// @version      0.4.3
+// @name:zh-CN   Bangumi 用户悬浮面板
+// @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
+// @version      0.4.4
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
+// @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
 // @match        https://bangumi.tv/*
 // @match        https://bgm.tv/*
