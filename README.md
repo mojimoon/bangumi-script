@@ -10,7 +10,7 @@ You can also find them on [My Greasy Fork](https://greasyfork.org/zh-CN/users/95
 
 | Script | Description |
 | --- | --- |
-| [Bangumi User Statistics on Topic Pages](https://greasyfork.org/zh-CN/scripts/465469-bangumi-user-statstics-on-topic-pages) | As the title says. |
+| [Bangumi User Statistics on Topic Page+](https://greasyfork.org/zh-CN/scripts/465469-bangumi-user-statstics-on-topic-page) | As the title says, but also works on subject and blog pages. |
 
 ## License
 
