@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bangumi User Info Float Panel
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @namespace    https://github.com/CryoVit/bangumi-script/
+// @version      0.2
 // @description  fork of https://bgm.tv/dev/app/953
 // @author       cureDovahkiin + CryoVit
 // @match        https://bangumi.tv/*
@@ -28,7 +28,6 @@
                     $(layout).addClass('fix-avatar-hover')
                 }
                 layout.innerHTML = `<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`
-                //...
                 const userData = {}
                 if (this.onclick) {
                     userData.id = this.onclick.toString().split("'")[1]
@@ -58,6 +57,11 @@
                                 userData.joinDate = /Bangumi<\/span> <span class="tip">([^<]*)<\/span>/.exec(e)[1]
                                 userData.lastEvent = /<small class="time">([^<]*)<\/small><\/li>/.exec(e)
                                 userData.watch = Array.from(e.match(/<a href="\/anime\/list[^>=]*>([0-9]{1,4}[^<]*)/g) || [], el => />([0-9]{1,5}.*)/.exec(el)[1])
+                                userData.watch = userData.watch.map(el => el.split('部'))
+                                userData.stats = /<div class="gridStats">([\s\S]*)<\/div>/.exec(e)[1]
+                                userData.stats = Array.from(userData.stats.match(/<div[^>]*>([\s\S]*?)<\/div>/g).slice(0, 6), el => /<div[^>]*>([\s\S]*?)<\/div>/.exec(el)[1])
+                                userData.stats = userData.stats.map(el => Array.from(el.match(/<span[^>]*>([\s\S]*?)<\/span>/g), el => /<span[^>]*>([\s\S]*?)<\/span>/.exec(el)[1]))
+                                // console.log(userData)
                                 r()
                             },
                             error: () => {
@@ -101,16 +105,30 @@
                             </div>
                             `: ''
                         }                
-                        <div class='user-watch'>
+                        <div class='user-stats'>
                             ${(function () {
-                                let tmp = ''
-                                userData.watch.forEach(el => {
-                                    tmp += `<span>${el}</span>`
-                                })
-                                return tmp
-                        })()}
+                                const watchStates = ['在看', '看过', '想看', '搁置', '抛弃'];
+                                let idx = 0;
+                                let html = ''
+                                for (let i = 0; i < 5; i++) {
+                                    if (userData.watch[idx][1] == watchStates[i]) {
+                                        html += `<span>${watchStates[i]} <strong>${userData.watch[idx][0]}</strong></span>`
+                                        idx++
+                                    } else {
+                                        html += `<span>${watchStates[i]} <strong>0</strong></span>`
+                                    }
+                                }
+                                html += '<br>'
+                                for (let i = 0; i < 6; i++) {
+                                    if (i == 2) {
+                                        continue
+                                    }
+                                    html += `<span>${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
+                                }
+                                return html
+                            })()}
                         </div>
-                        <span class='user-lastevent'>Last@${userData.lastEvent ? userData.lastEvent[1] : ''}</span>
+                        <span class='user-lastevent'>Last @ ${userData.lastEvent ? userData.lastEvent[1] : ''}</span>
                         <a class = 'hover-panel-btn' href="${userData.message}" target="_blank">发送短信</a>
                         <span id="panel-friend">
                         ${ userData.addFriend ? `
@@ -124,7 +142,7 @@
                     $(layout).addClass('dataready')
                     $('#PanelconnectFrd').click(function () {
                         $('#panel-friend').html(`<span class='my-friend'>正在添加...</span>`)
-                        $("#robot").fadeIn(500);
+                        $("#robot").fadeIn(500)
                         $("#robot_balloon").html(AJAXtip['wait'] + AJAXtip['addingFrd'])
                         $.ajax({
                             type: "GET",
@@ -200,6 +218,8 @@
         }
         .user-hover {
             position: absolute;
+            width: 400px;
+            height: 200px;
             background: var(--bg-color);
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
@@ -260,17 +280,19 @@
         .user-info .user-sign {
             word-break: break-all;
         }
-        .user-watch {
+        .user-stats {
             padding: 10px 0px 5px;
             margin-bottom: 10px;
         }
-        .user-watch span {
+        .user-stats span {
             display: inline-block;
             padding: 4px;
+            width: 19%;
+            box-sizing: border-box;
             border-left: 4px solid #f09199;
             background-color: var(--bg-pink) !important;
             color: var(--text-color) !important;
-            margin: 0 3px 3px 0;
+            margin: 0 1% 1% 0;
         }
         .shinkuro {
             width: 100%;
@@ -310,10 +332,6 @@
             border-radius: 5px;
             margin-left:10px;
             transition: all .2s ease-in;
-        }
-        a.hover-panel-btn:hover{
-            background: #b4696f;
-            color: white;
         }
         span.my-friend{
             display: inline-block;
