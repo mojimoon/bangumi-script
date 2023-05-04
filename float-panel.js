@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Bangumi User Info Float Panel
-// @namespace    https://github.com/CryoVit/bangumi-script/
-// @version      0.3
-// @description  fork of https://bgm.tv/dev/app/953
+// @name         Bangumi User Hover Panel
+// @namespace    https://github.com/shadowdreamer/jioben/tree/master/bangumi/
+// @version      0.4.3
+// @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @author       cureDovahkiin + CryoVit
 // @match        https://bangumi.tv/*
 // @match        https://bgm.tv/*
@@ -14,7 +14,7 @@
 
 (function () {
     let locker = false
-    $('[href*="/user/"].l,[href*="/user/"].avatar,#pm_sidebar a[onclick^="AddMSG"]').each(function () {
+    $('[href*="/user/"],[href*="/user/"].l,[href*="/user/"].avatar,#pm_sidebar a[onclick^="AddMSG"]').each(function () {
         let timer = null
         $(this).hover(function () {
             timer = setTimeout(() => {
@@ -184,7 +184,7 @@
                 $(this).after(layout).mouseout(function () {
                     timer = setTimeout(() => {
                         removeLayout()
-                    }, 200);
+                    }, 300);
                 })
                 $(layout).hover(function () {
                     clearTimeout(timer)
@@ -192,7 +192,7 @@
                     removeLayout()
                 })
                 return false
-            }, 300)
+            }, 500)
         },
             function () {
                 clearTimeout(timer)
@@ -220,7 +220,7 @@
         }
         .user-hover {
             position: absolute;
-            width: 400px;
+            width: 412px;
             height: 200px;
             min-height: 200px;
             background: var(--bg-color);
@@ -307,6 +307,10 @@
         .shinkuro-text {
             position: absolute;
             width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .shinkuro-text span {
             color: var(--text-color) !important;
@@ -321,9 +325,7 @@
             margin-left: 10px;
         }
         .shinkuro-text span:nth-of-type(2) {
-            float: right;
             margin-right: 26px;
-            margin-top: 4px;
         }
         a.hover-panel-btn {
             display: inline-block;
@@ -342,8 +344,9 @@
             margin-bottom: 8px;
             background: #6eb76e;
             color: white;
-            padding: 0px 8px;
+            padding: 1px 8px;
             border-radius: 5px;
+            margin-left:10px;
         }
         span.my-friend-fail{
             display: inline-block;
@@ -351,8 +354,9 @@
             margin-bottom: 8px;
             background: red;
             color: white;
-            padding: 0px 8px;
+            padding: 1px 8px;
             border-radius: 5px;
+            margin-left:10px;
         }
 
         .lds-roller {

@@ -8,9 +8,8 @@ You can also find them on [My Greasy Fork](https://greasyfork.org/zh-CN/users/95
 
 ## Scripts
 
-| Script | Description |
-| --- | --- |
-| [Bangumi User Statistics on Topic Page+](https://greasyfork.org/zh-CN/scripts/465469-bangumi-user-statstics-on-topic-page) | As the title says, but also works on subject and blog pages. |
+* ~~[Bangumi User Statistics on Topic Page+](https://greasyfork.org/zh-CN/scripts/465469-bangumi-user-statstics-on-topic-page)~~ (Deprecated)
+
 
 ## License
 
