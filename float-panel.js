@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.4.4
+// @version      0.5.0
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -212,6 +212,7 @@
             --bg-pink: #fce9e9;
             --bg-sky: #c2e1fc;
             --box-shadow: #ddd;
+            --text-gray: #666;
         }
         [data-theme='dark'] {
             --bg-color: #2d2e2f;
@@ -219,12 +220,12 @@
             --bg-pink: #3c3c3c;
             --bg-sky: #3c3c3c;
             --box-shadow: #6e6e6e;
+            --text-gray: #aaa;
         }
         .user-hover {
             position: absolute;
             width: 412px;
-            height: 200px;
-            min-height: 200px;
+            min-height: 
             background: var(--bg-color);
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
@@ -232,6 +233,11 @@
             font-size: 12px;
             z-index:999;
             color: var(--text-color);
+            line-height: 130%;
+            border-radius: 5px;
+            -webkit-border-radius: 5px;
+            backdrop-filter: blur(10px) contrast(95%);
+            -webkit-backdrop-filter: blur(10px) contrast(95%);
         }
         .fix-avatar-hover{
             transform: translate(45px,20px)
@@ -246,7 +252,7 @@
             margin-top: 3px;
             display: inline-block;
             vertical-align: top;
-            color: gray !important;
+            color: var(--text-gray);
         }
         div.dataready img {
             height: 75px;
@@ -274,8 +280,7 @@
         .user-info .user-id{
             font-size: 12px;
             font-weight:normal;
-            color: #ec5c68;
-            color: gray !important;
+            color: var(--text-gray);
         }
         .user-info .user-sign {
             word-break: break-all;
@@ -329,36 +334,25 @@
         .shinkuro-text span:nth-of-type(2) {
             margin-right: 26px;
         }
-        a.hover-panel-btn {
+        a.hover-panel-btn, span.my-friend, span.my-friend-fail {
             display: inline-block;
             float: right;
             margin-bottom: 8px;
-            background: #f09199;
             color: white;
             padding: 1px 8px;
-            border-radius: 5px;
+            border-radius: 10px;
             margin-left:10px;
             transition: all .2s ease-in;
         }
-        span.my-friend{
-            display: inline-block;
-            float: right;
-            margin-bottom: 8px;
-            background: #6eb76e;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 5px;
-            margin-left:10px;
+        a.hover-panel-btn {
+            background: #f09199;
+            transition: all .2s ease-in;
         }
-        span.my-friend-fail{
-            display: inline-block;
-            float: right;
-            margin-bottom: 8px;
+        span.my-friend {
+            background: #6eb76e;
+        }
+        span.my-friend-fail {
             background: red;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 5px;
-            margin-left:10px;
         }
 
         .lds-roller {
