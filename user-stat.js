@@ -1,10 +1,18 @@
 // ==UserScript==
 // @name         Bangumi User Statstics on Topic Page+
 // @namespace    http://tampermonkey.net/
-// @version      0.3.1
+// @version      0.3.2
 // @description  Display user statstics on topic, blog, subject pages. Data are fetched from user pages. High frequency of requests may cause 503 error, reload the page several times if that happens.
 // @author       CryoVit
-// @match        ^(https:\/\/(bangumi\.tv|bgm\.tv|chii\.in)\/)(group\/topic|subject|blog)\/.*$
+// @match        https://bgm.tv/group/topic/*
+// @match        https://bangumi.tv/group/topic/*
+// @match        https://chii.in/group/topic/*
+// @match        https://bgm.tv/subject/*
+// @match        https://bangumi.tv/subject/*
+// @match        https://chii.in/subject/*
+// @match        https://bgm.tv/blog/*
+// @match        https://bangumi.tv/blog/*
+// @match        https://chii.in/blog/*
 // @icon         https://bgm.tv/img/favicon.ico
 // @grant        none
 // @license      MIT
