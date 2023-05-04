@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.5.0
+// @version      0.5.1
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -212,7 +212,8 @@
             --bg-pink: #fce9e9;
             --bg-sky: #c2e1fc;
             --box-shadow: #ddd;
-            --text-gray: #666;
+            --text-gray: #6e6e6e;
+            --bg-filter: blur(10px) contrast(90%);
         }
         [data-theme='dark'] {
             --bg-color: #2d2e2f;
@@ -220,13 +221,14 @@
             --bg-pink: #3c3c3c;
             --bg-sky: #3c3c3c;
             --box-shadow: #6e6e6e;
-            --text-gray: #aaa;
+            --text-gray: #f7f7f7;
+            --bg-filter: blur(10px) contrast(50%);
         }
         .user-hover {
             position: absolute;
             width: 412px;
-            min-height: 
-            background: var(--bg-color);
+            min-height: 200px;
+            / *background: var(--bg-color); */
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
             transform: translate(0,6px);
@@ -236,8 +238,8 @@
             line-height: 130%;
             border-radius: 5px;
             -webkit-border-radius: 5px;
-            backdrop-filter: blur(10px) contrast(95%);
-            -webkit-backdrop-filter: blur(10px) contrast(95%);
+            backdrop-filter: var(--bg-filter);
+            -webkit-backdrop-filter: var(--bg-filter);
         }
         .fix-avatar-hover{
             transform: translate(45px,20px)
@@ -285,6 +287,7 @@
         .user-info .user-sign {
             word-break: break-all;
             margin-top: 3px;
+            color: var(--text-gray);
         }
         .user-stats {
             padding: 10px 0px 5px;
@@ -310,6 +313,7 @@
             background-color: var(--bg-sky) !important;
             line-height: 20px;
             border-radius: 10px;
+            margin-top: 5px;
         }
         .shinkuro-text {
             position: absolute;
@@ -326,7 +330,7 @@
             height: 20px;
             float: left;
             border-radius: 10px;
-            background: linear-gradient(to right, #9acdfb 0%,#4aa5f8 100%);
+            background: #369cf8;
         }
         .shinkuro-text span:nth-of-type(1) {
             margin-left: 10px;
@@ -350,6 +354,7 @@
         }
         span.my-friend {
             background: #6eb76e;
+            color: white !important;
         }
         span.my-friend-fail {
             background: red;
