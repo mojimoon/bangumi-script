@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bangumi User Info Float Panel
 // @namespace    https://github.com/CryoVit/bangumi-script/
-// @version      0.2
+// @version      0.3
 // @description  fork of https://bgm.tv/dev/app/953
 // @author       cureDovahkiin + CryoVit
 // @match        https://bangumi.tv/*
@@ -109,23 +109,23 @@
                             ${(function () {
                                 const watchStates = ['在看', '看过', '想看', '搁置', '抛弃'];
                                 let idx = 0;
-                                let html = ''
+                                let html = '<div class="stats-odd">'
                                 for (let i = 0; i < 5; i++) {
-                                    if (userData.watch[idx][1] == watchStates[i]) {
+                                    if (idx >= userData.watch.length || userData.watch[idx][1] != watchStates[i]) {
+                                        html += `<span>${watchStates[i]} <strong>0</strong></span>`
+                                    } else {
                                         html += `<span>${watchStates[i]} <strong>${userData.watch[idx][0]}</strong></span>`
                                         idx++
-                                    } else {
-                                        html += `<span>${watchStates[i]} <strong>0</strong></span>`
                                     }
                                 }
-                                html += '<br>'
+                                html += '</div><div class="stats-even">'
                                 for (let i = 0; i < 6; i++) {
                                     if (i == 2) {
                                         continue
                                     }
                                     html += `<span>${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
                                 }
-                                return html
+                                return html + '</div>'
                             })()}
                         </div>
                         <span class='user-lastevent'>Last @ ${userData.lastEvent ? userData.lastEvent[1] : ''}</span>
@@ -208,18 +208,21 @@
             --bg-color: #fff;
             --text-color: #010101;
             --bg-pink: #fce9e9;
+            --bg-sky: #c2e1fc;
             --box-shadow: #ddd;
         }
         [data-theme='dark'] {
             --bg-color: #2d2e2f;
             --text-color: #f7f7f7;
             --bg-pink: #3c3c3c;
+            --bg-sky: #3c3c3c;
             --box-shadow: #6e6e6e;
         }
         .user-hover {
             position: absolute;
             width: 400px;
             height: 200px;
+            min-height: 200px;
             background: var(--bg-color);
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
@@ -264,21 +267,17 @@
             color: #f7f7f7;
             border-radius: 10px;
             padding: 0 10px;
-            margin: 8px 4px 3px 0px;
-        }
-        .user-joindate {
-            margin: 0;
+            margin: 8px 4px 3px 0;
         }
         .user-info .user-id{
             font-size: 12px;
             font-weight:normal;
             color: #ec5c68;
-        }
-        .user-id {
             color: gray !important;
         }
         .user-info .user-sign {
             word-break: break-all;
+            margin-top: 3px;
         }
         .user-stats {
             padding: 10px 0px 5px;
@@ -294,10 +293,14 @@
             color: var(--text-color) !important;
             margin: 0 1% 1% 0;
         }
+        .stats-even span {
+            border-left: 4px solid #369cf8;
+            background-color: var(--bg-sky) !important;
+        }
         .shinkuro {
             width: 100%;
             height: 20px;
-            background-color: var(--bg-pink) !important;
+            background-color: var(--bg-sky) !important;
             line-height: 20px;
             border-radius: 10px;
         }
@@ -312,7 +315,7 @@
             height: 20px;
             float: left;
             border-radius: 10px;
-            background: linear-gradient(to right, #f9a9a9 0%,#fb788f 100%);
+            background: linear-gradient(to right, #9acdfb 0%,#4aa5f8 100%);
         }
         .shinkuro-text span:nth-of-type(1) {
             margin-left: 10px;
@@ -328,7 +331,7 @@
             margin-bottom: 8px;
             background: #f09199;
             color: white;
-            padding: 2px 8px;
+            padding: 1px 8px;
             border-radius: 5px;
             margin-left:10px;
             transition: all .2s ease-in;
@@ -339,8 +342,8 @@
             margin-bottom: 8px;
             background: #6eb76e;
             color: white;
-            padding: 2px 8px;
-            border-radius: 3px;
+            padding: 0px 8px;
+            border-radius: 5px;
         }
         span.my-friend-fail{
             display: inline-block;
@@ -348,8 +351,8 @@
             margin-bottom: 8px;
             background: red;
             color: white;
-            padding: 2px 8px;
-            border-radius: 3px;
+            padding: 0px 8px;
+            border-radius: 5px;
         }
 
         .lds-roller {
