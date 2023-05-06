@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.6.0
+// @version      0.6.1
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -17,24 +17,31 @@
 (function () {
     /*
         config: what to show in the hover panel
-        你可以自定义显示哪些信息
-        sinkuro: 1
-        anime count: 2
-        game count: 4
-        book count: 8
-        grid stat: 16
-        timeline: 32
+        1 = [reserved] recent topics
+        2 = timeline
+        4 = stats
+        8 = sinkuro
+        16 = anime
+        32 = game
+        64 = book
+        128 = [reserved] music
+        256 = [reserved] real
         the value is the sum of the entries you want
+        [reserved] means not implemented yet
     */
     if (localStorage.getItem('hover-panel-config') === null) { // default config
-        localStorage.setItem('hover-panel-config', '67') // sinkuro + anime + grid stat
+        localStorage.setItem('hover-panel-config', '28'); // 4 + 8 + 16
     }
     const entryStates = [
         ['在看', '看过', '想看', '搁置', '抛弃'],
         ['在玩', '玩过', '想玩', '搁置', '抛弃'],
         ['在读', '读过', '想读', '搁置', '抛弃']
     ];
-    const cfgNames = ['同步率', '动画', '游戏', '书籍', '统计', '时间线'];
+    const cfgNames = ['时间线', '统计', '同步率', '动画', '游戏', '书籍'];
+    const cfgTimeline = 2;
+    const cfgStats = 4;
+    const cfgSinkuro = 8;
+    const cfgAnime = 16;
     let locker = false
     $('[href*="/user/"],[href*="/user/"].l,[href*="/user/"].avatar,#pm_sidebar a[onclick^="AddMSG"]').each(function () {
         let timer = null
@@ -121,7 +128,7 @@
                             <p class='user-sign'>${userData.sign}</p>
                         </div>
                         ${
-                        ((localStorage.getItem('hover-panel-config') & 1) && userData.sinkuro) ? `
+                        ((localStorage.getItem('hover-panel-config') & cfgSinkuro) && userData.sinkuro) ? `
                             <div class="shinkuro">
                             <div style="width:${userData.sinkuroritsu}" class="shinkuroritsu"></div>
                             <div class="shinkuro-text">
@@ -137,7 +144,7 @@
                                 let html = ''
                                 let odd = true
                                 for (let i = 0; i < 3; i++) {
-                                    if (cfg & (2 << i)) { // anime, game, book
+                                    if (cfg & (cfgAnime << i)) {
                                         html += '<div class="stats-' + (odd ? 'odd' : 'even') + '">'
                                         let dt_j = 0
                                         for (let st_j = 0; st_j < 5; st_j++) {
@@ -152,7 +159,7 @@
                                         odd = !odd
                                     }
                                 }
-                                if (cfg & 16) { // stats
+                                if (cfg & cfgStats) {
                                     html += '<div class="stats-' + (odd ? 'odd' : 'even') + '">'
                                     for (let i = 0; i < 6; i++) {
                                         if (i == 2) {
@@ -171,7 +178,7 @@
                             })()}
                         </div>
                         ${
-                        (localStorage.getItem('hover-panel-config') & 32) ? `
+                        (localStorage.getItem('hover-panel-config') & cfgTimeline) ? `
                             <ul class="timeline" id="panel-timeline">${userData.timeline}</ul>
                             `: ''
                         }
@@ -355,7 +362,8 @@
         .fix-avatar-hover{
             transform: translate(45px,20px)
         }
-        
+
+        /* basic info */
         div.dataready {
             padding: 8px;
             font-weight: normal;
@@ -401,6 +409,7 @@
             color: var(--text-gray);
         }
 
+        /* stats */
         .user-stats {
             padding: 10px 0px 5px;
             margin-bottom: 0;
@@ -423,6 +432,7 @@
             opacity: 0.5;
         }
 
+        /* shinkuro */
         .shinkuro {
             width: 100%;
             height: 20px;
@@ -455,6 +465,10 @@
             margin-right: 26px;
         }
 
+        /* timeline */
+        #panel-timeline {
+            line-height: 100%;
+        }
         #panel-timeline a {
             display: inline !important;
         }
@@ -462,6 +476,7 @@
             color: var(--text-gray);
         }
 
+        /* buttons */
         a.hover-panel-btn, span.my-friend, span.my-friend-fail {
             display: inline-block;
             float: right;
@@ -489,6 +504,7 @@
             margin-left: 0;
         }
 
+        /* animation */
         .lds-roller {
             display: inline-block;
             position: relative;
@@ -579,6 +595,7 @@
             opacity: 1;
         }
 
+        /* config panel */
         #hover-panel-sub {
             width: 150px;
             height: 160px;
