@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.6.3
+// @version      0.6.4
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -16,17 +16,16 @@
 
 (function () {
     /*
-        config: what to show in the hover panel
         2 = timeline
         4 = stats
         8 = sinkuro
         16 = anime
         32 = game
         64 = book
-        128 = [reserved] music
-        256 = [reserved] real
-        the value is the sum of the entries you want
-        [reserved] means not implemented yet
+        128 = [reserved] for music
+        256 = [reserved] for real
+        the value is the sum of the entries to show,
+        e.g. 28 = 4 + 8 + 16, means show stats, sinkuro and anime
     */
     if (localStorage.getItem('hover-panel-config') === null) { // default config
         localStorage.setItem('hover-panel-config', '28'); // 4 + 8 + 16
@@ -247,12 +246,6 @@
                             $('#hover-panel-sub').remove()
                         }
                         sub.appendChild(save)
-
-                        sub.style.position = 'fixed'
-                        sub.style.top = '50%'
-                        sub.style.left = '50%'
-                        sub.style.transform = 'translate(-50%, -50%)'
-                        sub.style.zIndex = 1000
                         document.body.appendChild(sub)
                     }
                     cb.innerText = '设置'
@@ -319,7 +312,8 @@
         )
     })
 
-    // user's own avatar & link at (1) page header (2) footer dock (3) reply form (4) timeline
+    // prevent user link at (1) page header (2) footer dock (3) reply form (4) timeline
+    // from triggering hover panel
     $("#headerNeue2, #dock, #reply_wrapper, .tml_item").find("a[href*='/user/']").unbind();
 
     const style = document.createElement("style");
@@ -347,7 +341,7 @@
         .user-hover {
             position: absolute;
             width: 430px;
-            / *background: var(--bg-color); */
+            /* background: var(--bg-color); */
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
             transform: translate(0,6 px);
@@ -355,8 +349,8 @@
             z-index:999;
             color: var(--text-color);
             line-height: 130%;
-            border-radius: 5px;
-            -webkit-border-radius: 5px;
+            border-radius: 15px;
+            -webkit-border-radius: 15px;
             backdrop-filter: var(--bg-filter);
             -webkit-backdrop-filter: var(--bg-filter);
         }
@@ -427,13 +421,13 @@
             width: 19%;
             box-sizing: border-box;
             border-left: 4px solid #f09199;
-            background-color: var(--bg-pink) !important;
-            color: var(--text-color) !important;
+            background-color: var(--bg-pink);
+            color: var(--text-color);
             margin: 0 1% 1% 0;
         }
         .stats-even span {
             border-left: 4px solid #369cf8;
-            background-color: var(--bg-sky) !important;
+            background-color: var(--bg-sky);
         }
         .stats-zero {
             opacity: 0.5;
@@ -443,7 +437,7 @@
         .shinkuro {
             width: 100%;
             height: 20px;
-            background-color: var(--bg-sky) !important;
+            background-color: var(--bg-sky);
             line-height: 20px;
             border-radius: 10px;
             margin-top: 5px;
@@ -457,7 +451,7 @@
             justify-content: space-between;
         }
         .shinkuro-text span {
-            color: var(--text-color) !important;
+            color: var(--text-color);
         }
         .shinkuroritsu {
             height: 20px;
@@ -473,8 +467,8 @@
         }
 
         /* timeline */
-        #panel-timeline {
-            line-height: 100%;
+        #panel-timeline li {
+            margin-top: 0;
         }
         #panel-timeline a {
             display: inline !important;
@@ -487,11 +481,10 @@
         a.hover-panel-btn, span.my-friend, span.my-friend-fail {
             display: inline-block;
             float: right;
-            margin-bottom: 8px;
             color: white;
             padding: 1px 8px;
             border-radius: 10px;
-            margin-left:10px;
+            margin: 8px 0 0 10px;
             transition: all .2s ease-in;
         }
         a.hover-panel-btn {
@@ -500,7 +493,6 @@
         }
         span.my-friend {
             background: #6eb76e;
-            color: white !important;
         }
         span.my-friend-fail {
             background: red;
@@ -608,6 +600,11 @@
             height: 160px;
             padding: 5px;
             line-height: 1.5;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
         #hover-panel-sub legend {
             font-size: 14px;
