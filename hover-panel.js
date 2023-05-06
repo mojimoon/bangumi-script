@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.6.2
+// @version      0.6.3
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -17,7 +17,6 @@
 (function () {
     /*
         config: what to show in the hover panel
-        1 = [reserved] recent topics
         2 = timeline
         4 = stats
         8 = sinkuro
@@ -43,7 +42,7 @@
     const cfgSinkuro = 8;
     const cfgAnime = 16;
     let locker = false
-    $('[href*="/user/"],[href*="/user/"].l,[href*="/user/"].avatar,#pm_sidebar a[onclick^="AddMSG"]').each(function () {
+    $('[href*="/user/"],#pm_sidebar a[onclick^="AddMSG"]').each(function () {
         let timer = null
         $(this).hover(function () {
             timer = setTimeout(() => {
@@ -55,6 +54,9 @@
                 $(layout).addClass('user-hover')
                 if ($(this).hasClass('avatar')) {
                     $(layout).addClass('fix-avatar-hover')
+                }
+                if (document.body.clientWidth - this.getBoundingClientRect().right < 430) {
+                    $(layout).addClass('fix-right-hover')
                 }
                 layout.innerHTML = `<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`
                 const userData = {}
@@ -344,11 +346,11 @@
         }
         .user-hover {
             position: absolute;
-            width: 412px;
+            width: 430px;
             / *background: var(--bg-color); */
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
-            transform: translate(0,6px);
+            transform: translate(0,6 px);
             font-size: 12px;
             z-index:999;
             color: var(--text-color);
@@ -358,8 +360,14 @@
             backdrop-filter: var(--bg-filter);
             -webkit-backdrop-filter: var(--bg-filter);
         }
-        .fix-avatar-hover{
-            transform: translate(45px,20px)
+        .fix-avatar-hover {
+            transform: translate(55px, 20px)
+        }
+        .fix-right-hover {
+            transform: translate(-430px, 6px)
+        }
+        .fix-avatar-hover.fix-right-hover {
+            transform: translate(-485px, 20px)
         }
 
         /* basic info */
