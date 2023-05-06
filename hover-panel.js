@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.6.1
+// @version      0.6.2
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -317,9 +317,8 @@
         )
     })
 
-    // these cases will NOT trigger the hover panel
-    // user's own avatar & link at (1) page header (2) footer dock (3) reply form
-    $("#headerNeue2, #dock, #reply_wrapper").find("a[href*='/user/']").unbind();
+    // user's own avatar & link at (1) page header (2) footer dock (3) reply form (4) timeline
+    $("#headerNeue2, #dock, #reply_wrapper, .tml_item").find("a[href*='/user/']").unbind();
 
     const style = document.createElement("style");
     const heads = document.getElementsByTagName("head");
