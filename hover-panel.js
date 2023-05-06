@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.5.1
+// @version      0.6.0
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -15,6 +15,26 @@
 // ==/UserScript==
 
 (function () {
+    /*
+        config: what to show in the hover panel
+        你可以自定义显示哪些信息
+        sinkuro: 1
+        anime count: 2
+        game count: 4
+        book count: 8
+        grid stat: 16
+        timeline: 32
+        the value is the sum of the entries you want
+    */
+    if (localStorage.getItem('hover-panel-config') === null) { // default config
+        localStorage.setItem('hover-panel-config', '67') // sinkuro + anime + grid stat
+    }
+    const entryStates = [
+        ['在看', '看过', '想看', '搁置', '抛弃'],
+        ['在玩', '玩过', '想玩', '搁置', '抛弃'],
+        ['在读', '读过', '想读', '搁置', '抛弃']
+    ];
+    const cfgNames = ['同步率', '动画', '游戏', '书籍', '统计', '时间线'];
     let locker = false
     $('[href*="/user/"],[href*="/user/"].l,[href*="/user/"].avatar,#pm_sidebar a[onclick^="AddMSG"]').each(function () {
         let timer = null
@@ -57,9 +77,12 @@
                                     userData.addFriend = userData.addFriend ? userData.addFriend[1] : false
                                 }
                                 userData.joinDate = /Bangumi<\/span> <span class="tip">([^<]*)<\/span>/.exec(e)[1]
-                                userData.lastEvent = /<small class="time">([^<]*)<\/small><\/li>/.exec(e)
-                                userData.watch = Array.from(e.match(/<a href="\/anime\/list[^>=]*>([0-9]{1,4}[^<]*)/g) || [], el => />([0-9]{1,5}.*)/.exec(el)[1])
-                                userData.watch = userData.watch.map(el => el.split('部'))
+                                // userData.lastEvent = /<small class="time">([^<]*)<\/small><\/li>/.exec(e)
+                                userData.entry = [
+                                    Array.from(e.match(/<a href="\/anime\/list[^>=]*>([0-9]{1,4}[^<]*)/g) || [], el => />([0-9]{1,5}.*)/.exec(el)[1]).map(el => el.split('部')),
+                                    Array.from(e.match(/<a href="\/game\/list[^>=]*>([0-9]{1,4}[^<]*)/g) || [], el => />([0-9]{1,5}.*)/.exec(el)[1]).map(el => el.split('部')),
+                                    Array.from(e.match(/<a href="\/book\/list[^>=]*>([0-9]{1,4}[^<]*)/g) || [], el => />([0-9]{1,5}.*)/.exec(el)[1]).map(el => el.split('本'))
+                                ]
                                 userData.stats = /<div class="gridStats">([\s\S]*)<\/div>/.exec(e)[1]
                                 userData.stats = Array.from(userData.stats.match(/<div[^>]*>([\s\S]*?)<\/div>/g).slice(0, 6), el => /<div[^>]*>([\s\S]*?)<\/div>/.exec(el)[1])
                                 userData.stats = userData.stats.map(el => Array.from(el.match(/<span[^>]*>([\s\S]*?)<\/span>/g), el => /<span[^>]*>([\s\S]*?)<\/span>/.exec(el)[1]))
@@ -97,7 +120,7 @@
                             <p class='user-sign'>${userData.sign}</p>
                         </div>
                         ${
-                        userData.sinkuro ? `
+                        ((localStorage.getItem('hover-panel-config') & 1) && userData.sinkuro) ? `
                             <div class="shinkuro">
                             <div style="width:${userData.sinkuroritsu}" class="shinkuroritsu"></div>
                             <div class="shinkuro-text">
@@ -109,28 +132,44 @@
                         }                
                         <div class='user-stats'>
                             ${(function () {
-                                const watchStates = ['在看', '看过', '想看', '搁置', '抛弃'];
-                                let idx = 0;
-                                let html = '<div class="stats-odd">'
-                                for (let i = 0; i < 5; i++) {
-                                    if (idx >= userData.watch.length || userData.watch[idx][1] != watchStates[i]) {
-                                        html += `<span>${watchStates[i]} <strong>0</strong></span>`
-                                    } else {
-                                        html += `<span>${watchStates[i]} <strong>${userData.watch[idx][0]}</strong></span>`
-                                        idx++
+                                const cfg = localStorage.getItem('hover-panel-config')
+                                let html = ''
+                                let odd = true
+                                for (let i = 0; i < 3; i++) {
+                                    if (cfg & (2 << i)) { // anime, game, book
+                                        html += '<div class="stats-' + (odd ? 'odd' : 'even') + '">'
+                                        let dt_j = 0
+                                        for (let st_j = 0; st_j < 5; st_j++) {
+                                            if (dt_j >= userData.entry[i].length || userData.entry[i][dt_j][1] != entryStates[i][st_j]) {
+                                                html += `<span class="stats-zero">${entryStates[i][st_j]} <strong>0</strong></span>`
+                                            } else {
+                                                html += `<span>${entryStates[i][st_j]} <strong>${userData.entry[i][dt_j][0]}</strong></span>`
+                                                dt_j++
+                                            }
+                                        }
+                                        html += '</div>'
+                                        odd = !odd
                                     }
                                 }
-                                html += '</div><div class="stats-even">'
-                                for (let i = 0; i < 6; i++) {
-                                    if (i == 2) {
-                                        continue
+                                if (cfg & 16) { // stats
+                                    html += '<div class="stats-' + (odd ? 'odd' : 'even') + '">'
+                                    for (let i = 0; i < 6; i++) {
+                                        if (i == 2) {
+                                            continue
+                                        }
+                                        if (userData.stats[i][0] == '0.00' || userData.stats[i][0] == '0') {
+                                            html += `<span class="stats-zero">${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
+                                        } else {
+                                            html += `<span>${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
+                                        }
                                     }
-                                    html += `<span>${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
+                                    html += '</div>'
+                                    odd = !odd
                                 }
-                                return html + '</div>'
+                                return html
                             })()}
                         </div>
-                        <span class='user-lastevent'>Last @ ${userData.lastEvent ? userData.lastEvent[1] : ''}</span>
+                        <!-- <span class='user-lastevent'>Last @ ${userData.lastEvent ? userData.lastEvent[1] : ''}</span> -->
                         <a class = 'hover-panel-btn' href="${userData.message}" target="_blank">发送短信</a>
                         <span id="panel-friend">
                         ${ userData.addFriend ? `
@@ -140,10 +179,62 @@
                             `}
                         </span>
                         `
+                    
+                    let cb = document.createElement('a')
+                    cb.className = 'hover-panel-btn'
+                    cb.id = 'cfg-btn'
+                    cb.href = 'javascript:void(0)'
+                    cb.onclick = function () {
+                        let cfg = localStorage.getItem('hover-panel-config')
+                        let sub = document.createElement('div')
+                        sub.className = 'user-hover'
+                        sub.id = 'hover-panel-sub'
+                        sub.innerHTML = `
+                            <fieldset>
+                                <legend>设置显示项目</legend>
+                                ${(function () {
+                                    let html = ''
+                                    for (let i = 0; i < 6; i++) {
+                                        html += `<div class='hover-cfg-item'>
+                                            <input type='checkbox' id='hover-cfg-${i}' ${cfg & (2 << i) ? 'checked' : ''}>
+                                            <label for='hover-cfg-${i}'>${cfgNames[i]}</label>
+                                        </div>`
+                                    }
+                                    return html
+                                })()}
+                                </div>
+                            </fieldset>
+                        `
+                        let save = document.createElement('a')
+                        save.className = 'hover-panel-btn'
+                        save.id = 'cfg-save-btn'
+                        save.href = 'javascript:void(0)'
+                        save.innerText = '保存'
+                        save.onclick = function () {
+                            let cfg = 0
+                            for (let i = 0; i < 6; i++) {
+                                if (document.getElementById(`hover-cfg-${i}`).checked) {
+                                    cfg |= (2 << i)
+                                }
+                            }
+                            localStorage.setItem('hover-panel-config', cfg)
+                            $('#hover-panel-sub').remove()
+                        }
+                        sub.appendChild(save)
+                        // display the sub at z-index 1000 in the very center of the screen
+                        sub.style.position = 'fixed'
+                        sub.style.top = '50%'
+                        sub.style.left = '50%'
+                        sub.style.transform = 'translate(-50%, -50%)'
+                        sub.style.zIndex = 1000
+                        document.body.appendChild(sub)
+                    }
+                    cb.innerText = '设置'
+                    layout.appendChild(cb)
 
                     $(layout).addClass('dataready')
                     $('#PanelconnectFrd').click(function () {
-                        $('#panel-friend').html(`<span class='my-friend'>正在添加...</span>`)
+                        $('#panel-friend').html(`<span class='my-friend'>正在添加</span>`)
                         $("#robot").fadeIn(500)
                         $("#robot_balloon").html(AJAXtip['wait'] + AJAXtip['addingFrd'])
                         $.ajax({
@@ -163,7 +254,7 @@
                                 $("#robot").animate({
                                     opacity: 1
                                 }, 1000).fadeOut(500)
-                                $('#panel-friend').html(`<span class='my-friend-fail'>添加失败,稍后再试</span>`)
+                                $('#panel-friend').html(`<span class='my-friend-fail'>添加失败</span>`)
                             }
                         })
                         return false
@@ -202,6 +293,10 @@
         )
     })
 
+    // these cases will NOT trigger the hover panel
+    // user's own avatar & link at (1) page header (2) footer dock (3) reply form
+    $("#headerNeue2, #dock, #reply_wrapper").find("a[href*='/user/']").unbind();
+
     const style = document.createElement("style");
     const heads = document.getElementsByTagName("head");
     style.setAttribute("type", "text/css");
@@ -221,13 +316,12 @@
             --bg-pink: #3c3c3c;
             --bg-sky: #3c3c3c;
             --box-shadow: #6e6e6e;
-            --text-gray: #f7f7f7;
+            --text-gray: #aaa;
             --bg-filter: blur(10px) contrast(50%);
         }
         .user-hover {
             position: absolute;
             width: 412px;
-            min-height: 200px;
             / *background: var(--bg-color); */
             box-shadow: 0px 0px 4px 1px var(--box-shadow);
             transition: all .2s ease-in;
@@ -250,12 +344,12 @@
             font-weight: normal;
             text-align: left;
         }
-        span.user-lastevent {
+        /* span.user-lastevent {
             margin-top: 3px;
             display: inline-block;
             vertical-align: top;
             color: var(--text-gray);
-        }
+        } */
         div.dataready img {
             height: 75px;
             width:75px;
@@ -307,6 +401,9 @@
             border-left: 4px solid #369cf8;
             background-color: var(--bg-sky) !important;
         }
+        .stats-zero {
+            opacity: 0.5;
+        }
         .shinkuro {
             width: 100%;
             height: 20px;
@@ -353,13 +450,17 @@
             transition: all .2s ease-in;
         }
         span.my-friend {
-            background: #6eb76e;
+            background: #369cf8;
             color: white !important;
         }
         span.my-friend-fail {
             background: red;
         }
-
+        #cfg-btn {
+            background: #369cf8;
+            float: left;
+            margin-left: 0;
+        }
         .lds-roller {
             display: inline-block;
             position: relative;
