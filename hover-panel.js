@@ -86,6 +86,7 @@
                                 userData.stats = /<div class="gridStats">([\s\S]*)<\/div>/.exec(e)[1]
                                 userData.stats = Array.from(userData.stats.match(/<div[^>]*>([\s\S]*?)<\/div>/g).slice(0, 6), el => /<div[^>]*>([\s\S]*?)<\/div>/.exec(el)[1])
                                 userData.stats = userData.stats.map(el => Array.from(el.match(/<span[^>]*>([\s\S]*?)<\/span>/g), el => /<span[^>]*>([\s\S]*?)<\/span>/.exec(el)[1]))
+                                userData.timeline = /<ul class="timeline">([\s\S]*?)<\/ul>/.exec(e)[1]
                                 // console.log(userData)
                                 r()
                             },
@@ -157,7 +158,7 @@
                                         if (i == 2) {
                                             continue
                                         }
-                                        if (userData.stats[i][0] == '0.00' || userData.stats[i][0] == '0') {
+                                        if (userData.stats[i][0] == 0) { // '0.00' == 0
                                             html += `<span class="stats-zero">${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
                                         } else {
                                             html += `<span>${userData.stats[i][1]} <strong>${userData.stats[i][0]}</strong></span>`
@@ -169,6 +170,11 @@
                                 return html
                             })()}
                         </div>
+                        ${
+                        (localStorage.getItem('hover-panel-config') & 32) ? `
+                            <ul class="timeline" id="panel-timeline">${userData.timeline}</ul>
+                            `: ''
+                        }
                         <!-- <span class='user-lastevent'>Last @ ${userData.lastEvent ? userData.lastEvent[1] : ''}</span> -->
                         <a class = 'hover-panel-btn' href="${userData.message}" target="_blank">发送短信</a>
                         <span id="panel-friend">
@@ -205,6 +211,17 @@
                                 </div>
                             </fieldset>
                         `
+
+                        let cancel = document.createElement('a')
+                        cancel.className = 'hover-panel-btn'
+                        cancel.id = 'cfg-cancel-btn'
+                        cancel.href = 'javascript:void(0)'
+                        cancel.innerText = '取消'
+                        cancel.onclick = function () {
+                            $('#hover-panel-sub').remove()
+                        }
+                        sub.appendChild(cancel)
+
                         let save = document.createElement('a')
                         save.className = 'hover-panel-btn'
                         save.id = 'cfg-save-btn'
@@ -221,7 +238,7 @@
                             $('#hover-panel-sub').remove()
                         }
                         sub.appendChild(save)
-                        // display the sub at z-index 1000 in the very center of the screen
+
                         sub.style.position = 'fixed'
                         sub.style.top = '50%'
                         sub.style.left = '50%'
@@ -277,7 +294,7 @@
                 $(this).after(layout).mouseout(function () {
                     timer = setTimeout(() => {
                         removeLayout()
-                    }, 300);
+                    }, 500);
                 })
                 $(layout).hover(function () {
                     clearTimeout(timer)
@@ -383,9 +400,10 @@
             margin-top: 3px;
             color: var(--text-gray);
         }
+
         .user-stats {
             padding: 10px 0px 5px;
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
         .user-stats span {
             display: inline-block;
@@ -404,6 +422,7 @@
         .stats-zero {
             opacity: 0.5;
         }
+
         .shinkuro {
             width: 100%;
             height: 20px;
@@ -435,6 +454,14 @@
         .shinkuro-text span:nth-of-type(2) {
             margin-right: 26px;
         }
+
+        #panel-timeline a {
+            display: inline !important;
+        }
+        #panel-timeline .time {
+            color: var(--text-gray);
+        }
+
         a.hover-panel-btn, span.my-friend, span.my-friend-fail {
             display: inline-block;
             float: right;
@@ -450,7 +477,7 @@
             transition: all .2s ease-in;
         }
         span.my-friend {
-            background: #369cf8;
+            background: #6eb76e;
             color: white !important;
         }
         span.my-friend-fail {
@@ -461,6 +488,7 @@
             float: left;
             margin-left: 0;
         }
+
         .lds-roller {
             display: inline-block;
             position: relative;
@@ -549,6 +577,37 @@
         
         #comment_list div.sub_reply_collapse {
             opacity: 1;
+        }
+
+        #hover-panel-sub {
+            width: 150px;
+            height: 160px;
+            padding: 5px;
+            line-height: 1.5;
+        }
+        #hover-panel-sub legend {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+        #hover-panel-sub fieldset {
+            padding: 0 5px;
+        }
+        #hover-panel-sub .hover-panel-btn {
+            display: inline-block;
+            text-align: center;
+        }
+        #cfg-cancel-btn {
+            position: absolute;
+            left: 14px;
+            bottom: 0;
+            background: #f09199;
+        }
+        #cfg-save-btn {
+            position: absolute;
+            right: 24px;
+            bottom: 0;
+            background: #6eb76e;
         }
     `
     heads[0].append(style)
