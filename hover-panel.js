@@ -2,7 +2,7 @@
 // @name         Bangumi User Hover Panel
 // @name:zh-CN   Bangumi 用户悬浮面板
 // @namespace    https://github.com/CryoVit/jioben/tree/master/bangumi/
-// @version      0.6.4
+// @version      0.6.5
 // @description  fork of https://bgm.tv/dev/app/953. Display a hover panel when mouse hover on user link.
 // @description:zh-CN  https://bgm.tv/dev/app/953 的修改版，鼠标悬浮在用户链接上方时出现悬浮框
 // @author       cureDovahkiin + CryoVit
@@ -621,13 +621,13 @@
         #cfg-cancel-btn {
             position: absolute;
             left: 14px;
-            bottom: 0;
+            bottom: 6px;
             background: #f09199;
         }
         #cfg-save-btn {
             position: absolute;
             right: 24px;
-            bottom: 0;
+            bottom: 6px;
             background: #6eb76e;
         }
     `
